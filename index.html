@@ -1,6 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <script>
+    function changeSheet() {
+      const iframe = document.getElementById('musicFrame');
+      const sheetSelector = document.getElementById('sheetSelector');
+      const selectedValue = sheetSelector.value;
+      iframe.src = selectedValue;
+    }
+
+    function loadSongs(songs) {
+      const sheetSelector = document.getElementById('sheetSelector');
+      songs.forEach(song => {
+        const option = document.createElement('option');
+        option.value = song.url;  // Use full URL from JSON
+        option.textContent = song.name;  // Display the user-friendly name
+        sheetSelector.appendChild(option);
+      });
+    }
+
+    async function fetchSongs() {
+      try {
+        const response = await fetch('songs.json');
+        const songs = await response.json();
+        loadSongs(songs);
+        document.getElementById('musicFrame').src = songs[0].url;
+      } catch (error) {
+        console.error("Error fetching songs:", error);
+      }
+    }
+
+    // Fetch songs on page load
+    window.onload = fetchSongs;
+  </script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Partituras EML</title>
@@ -29,25 +61,12 @@
 </head>
 <body>
 
-  <h1>Partituras EML</h1>
-
-  <label for="sheetSelector">Selecciona una pieza:</label>
+  <label for="sheetSelector">Tria una partitura:</label>
   <select id="sheetSelector" onchange="changeSheet()">
-    <option value="https://flat.io/embed/66577438a8876c0f000a28f3?layout=track&locale=es&sharingKey=ea889739d96b31de5c1eecff8e00736b55476620e891c8ebc3c419fe7ff609e797f2178a0733da42f829294cf8245b0b39b73a435227fd195a663506e07f05fa">
-      Seal Lullaby
-    </option>
-    <option value="https://flat.io/embed/another_music_sheet_id?layout=track&locale=es&sharingKey=another_sharing_key">
-      Beethoven - Fur Elise
-    </option>
-    <option value="https://flat.io/embed/yet_another_music_sheet_id?layout=track&locale=es&sharingKey=yet_another_sharing_key">
-      Chopin - Nocturne Op. 9 No. 2
-    </option>
-    <!-- Add more music sheet names and URLs as needed -->
+    <!-- Songs will be dynamically loaded here -->
   </select>
 
-  <iframe id="musicFrame" src="https://flat.io/embed/66577438a8876c0f000a28f3?layout=track&locale=es&sharingKey=ea889739d96b31de5c1eecff8e00736b55476620e891c8ebc3c419fe7ff609e797f2178a0733da42f829294cf8245b0b39b73a435227fd195a663506e07f05fa" 
-    height="500" width="100%" frameborder="0" allowfullscreen allow="autoplay; midi">
+  <iframe id="musicFrame" src="" height="800" width="100%" frameborder="0" allowfullscreen allow="autoplay; midi">
   </iframe>
-
 </body>
 </html>
