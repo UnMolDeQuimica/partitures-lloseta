@@ -1,72 +1,73 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <script>
-    function changeSheet() {
-      const iframe = document.getElementById('musicFrame');
-      const sheetSelector = document.getElementById('sheetSelector');
-      const selectedValue = sheetSelector.value;
-      iframe.src = selectedValue;
-    }
+  <link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css"
+>
+<script>
+  let songs = [];
 
-    function loadSongs(songs) {
-      const sheetSelector = document.getElementById('sheetSelector');
-      songs.forEach(song => {
-        const option = document.createElement('option');
-        option.value = song.url;  // Use full URL from JSON
-        option.textContent = song.name;  // Display the user-friendly name
-        sheetSelector.appendChild(option);
-      });
-    }
+  function changeSheet() {
+    const iframe = document.getElementById('musicFrame');
+    const extraLink = document.getElementById('extraLink');
+    const sheetSelector = document.getElementById('sheetSelector');
+    const selectedIndex = sheetSelector.selectedIndex;
+    const selectedSong = songs[selectedIndex];
+    
+    // Update iframe src with the selected song URL
+    iframe.src = selectedSong.url;
+    
+    // Display the extra link
+    extraLink.href = selectedSong.extra_url;
+  }
 
-    async function fetchSongs() {
-      try {
-        const response = await fetch('songs.json');
-        const songs = await response.json();
-        loadSongs(songs);
-        document.getElementById('musicFrame').src = songs[0].url;
-      } catch (error) {
-        console.error("Error fetching songs:", error);
-      }
-    }
+  function loadSongs(songsData) {
+    const sheetSelector = document.getElementById('sheetSelector');
+    songs = songsData;
+    
+    songs.forEach(song => {
+      const option = document.createElement('option');
+      option.value = song.url;  // Use full URL from JSON
+      option.textContent = song.name;  // Display the user-friendly name
+      sheetSelector.appendChild(option);
+    });
+  }
 
-    // Fetch songs on page load
-    window.onload = fetchSongs;
-  </script>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Partituras EML</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
+  async function fetchSongs() {
+    try {
+      const response = await fetch('songs.json');  // Fetch the JSON file
+      const songsData = await response.json();  // Parse it to JSON
+      loadSongs(songsData);  // Load songs into the dropdown
+
+      // Set the iframe and extra link for the first song by default
+      document.getElementById('musicFrame').src = songsData[0].url;
+      const extraLink = document.getElementById('extraLink');
+      extraLink.href = songsData[0].extra_url;
+    } catch (error) {
+      console.error("Error fetching songs:", error);
     }
-    select {
-      padding: 10px;
-      font-size: 16px;
-    }
-    iframe {
-      margin-top: 20px;
-      border: 1px solid #ccc;
-    }
-  </style>
-  <script>
-    function changeSheet() {
-      const iframe = document.getElementById('musicFrame');
-      const sheetSelector = document.getElementById('sheetSelector');
-      const selectedValue = sheetSelector.value;
-      iframe.src = selectedValue;
-    }
-  </script>
+  }
+
+  // Fetch songs on page load
+  window.onload = fetchSongs;
+</script>
 </head>
 <body>
-
-  <label for="sheetSelector">Tria una partitura:</label>
+  <main class="container">
+  <h1>Tria una partitura:</h1>
   <select id="sheetSelector" onchange="changeSheet()">
-    <!-- Songs will be dynamically loaded here -->
   </select>
 
   <iframe id="musicFrame" src="" height="800" width="100%" frameborder="0" allowfullscreen allow="autoplay; midi">
   </iframe>
+  
+  <h1>Instruccions de descàrrega</h1>
+  <blockquote>Es recomana descarregar desde un ordinador.</blockquote>
+  <p>Per anar a la pàgina de descarrega, fes click <a href="" id="extraLink" target=”_blank”>aqui</a>.</p>
+  <p>Al mòbil, selecciona "Mostrar detalles", després selecciona "Descargar o imprimir" i tria la opció desitjada.</p>
+  <p>Si estàs a un ordinador, cerca l'opció "Descargar o imprimir" i selecciona l'opció desitjada.</p>
+  <blockquote>Sovint la descàrrega triga una mica, tingueu paciència si us plau.</blockquote>
+</main>
 </body>
 </html>
